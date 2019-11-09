@@ -33,7 +33,8 @@ static duk_ret_t include(duk_context *ctx) {
   duk_pop(ctx);  /* ignore result */
   return 0;  /* no return value (= undefined) */
 }
-static duk_ret_t add_line(duk_context *ctx) {
+static duk_ret_t add_line(duk_context *ctx)
+{
 
     Vector p0;
     p0.x = duk_to_number(ctx, 0) * SS.exportScale;
@@ -52,7 +53,23 @@ static duk_ret_t add_line(duk_context *ctx) {
     r->style = style;
     return 0;  /* no return value (= undefined) */
 }
+static duk_ret_t add_circle(duk_context *ctx)
+{
+    /* Scale points by import/export scale */
+    hStyle style;
+    Vector center;
+    center.x = duk_to_number(ctx, 0) * SS.exportScale;
+    center.y = duk_to_number(ctx, 1) * SS.exportScale;
+    double radius = duk_to_number(ctx, 2) * SS.exportScale;
+    hRequest hr = SS.GW.AddRequest(Request::Type::CIRCLE, /*rememberForUndo=*/false);
+    SK.GetEntity(hr.entity(1))->PointForceTo(center);
+    SK.GetEntity(hr.entity(64))->DistanceForceTo(radius);
 
+    Request *r = SK.GetRequest(hr);
+    r->construction = duk_to_boolean(ctx, 3);
+    r->style = style;
+    return 0;  /* no return value (= undefined) */
+}
 std::string Javascript::eval(std::string exp)
 {
     duk_push_string(ctx, exp.c_str());
@@ -92,6 +109,9 @@ void Javascript::init()
 
     duk_push_c_function(ctx, add_line, 5 /*nargs*/);
     duk_put_global_string(ctx, "add_line");
+
+    duk_push_c_function(ctx, add_circle, 4 /*nargs*/);
+    duk_put_global_string(ctx, "add_circle");
 
     duk_module_duktape_init(ctx);
     eval_file("scripts/loader.js");

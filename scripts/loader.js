@@ -24,7 +24,12 @@ function polar_line_test()
     //Draw polar line
     draw.polar_line({x: 0, y: 0}, 2, 110, true);
 }
-function test()
+function test_circles()
 {
-    
+    radius = 1;
+    for (var x = 0; x < 100; x++)
+    {
+        draw.circle({x: 0, y: 0}, radius, false);
+        radius += 0.125;
+    }   
 }

@@ -10,3 +10,7 @@ draw.polar_line = function(p0, dist, angle, construction)
     p1 = geo.rotatePoint(p1, p0, angle);
     this.line(p0, p1, construction);
 }
+draw.circle = function(center, radius, construction)
+{
+    add_circle(Number(center.x), Number(center.y), Number(radius), construction);
+}
