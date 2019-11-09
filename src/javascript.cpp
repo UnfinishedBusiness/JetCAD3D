@@ -2,6 +2,8 @@
 #include "duktape.h"
 #include "duk_module_duktape.h"
 #include "javascript.h"
+#include "libdxfrw.h"
+#include "libdwgr.h"
 #include <string>
 
 static void push_file_as_string(duk_context *ctx, const char *filename) {
@@ -18,6 +20,7 @@ static void push_file_as_string(duk_context *ctx, const char *filename) {
         duk_push_undefined(ctx);
     }
 }
+/* Javascript binding functions */
 static duk_ret_t print(duk_context *ctx) {
   printf("%s", duk_to_string(ctx, 0));
   return 0;  /* no return value (= undefined) */
@@ -30,7 +33,25 @@ static duk_ret_t include(duk_context *ctx) {
   duk_pop(ctx);  /* ignore result */
   return 0;  /* no return value (= undefined) */
 }
+static duk_ret_t add_line(duk_context *ctx) {
 
+    Vector p0;
+    p0.x = duk_to_number(ctx, 0) * SS.exportScale;
+    p0.y = duk_to_number(ctx, 1) * SS.exportScale;
+    Vector p1;
+    p1.x = duk_to_number(ctx, 2) * SS.exportScale;
+    p1.y = duk_to_number(ctx, 3) * SS.exportScale;
+    hStyle style;
+
+    hRequest hr = SS.GW.AddRequest(Request::Type::LINE_SEGMENT, /*rememberForUndo=*/false);
+    SK.GetEntity(hr.entity(1))->PointForceTo(p0);
+    SK.GetEntity(hr.entity(2))->PointForceTo(p1);
+
+    Request *r = SK.GetRequest(hr);
+    r->construction = duk_to_boolean(ctx, 4);
+    r->style = style;
+    return 0;  /* no return value (= undefined) */
+}
 
 std::string Javascript::eval(std::string exp)
 {
@@ -60,7 +81,7 @@ void Javascript::eval_file(std::string file)
 }
 void Javascript::init()
 {
-    printf("*INIT* Javascript Engine!\n");
+    //printf("*INIT* Javascript Engine!\n");
     ctx = duk_create_heap_default();
     
     duk_push_c_function(ctx, print, 1 /*nargs*/);
@@ -69,6 +90,21 @@ void Javascript::init()
     duk_push_c_function(ctx, include, 1 /*nargs*/);
     duk_put_global_string(ctx, "include");
 
+    duk_push_c_function(ctx, add_line, 5 /*nargs*/);
+    duk_put_global_string(ctx, "add_line");
+
     duk_module_duktape_init(ctx);
     eval_file("scripts/loader.js");
+}
+void Javascript::destroy()
+{
+    duk_destroy_heap(ctx);
+}
+void Javascript::refresh()
+{
+    if (ctx != NULL)
+    {
+        destroy();
+    }
+    init();
 }

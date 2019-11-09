@@ -985,6 +985,7 @@ void SolveSpaceUI::Clear() {
     GW.undoMenuItem = NULL;
     GW.redoMenuItem = NULL;
     GW.window = NULL;
+    js.destroy();
 }
 
 void Sketch::Clear() {

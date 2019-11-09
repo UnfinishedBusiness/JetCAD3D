@@ -5,6 +5,7 @@
 // Copyright 2008-2013 Jonathan Westhues.
 //-----------------------------------------------------------------------------
 #include "solvespace.h"
+#include "javascript.h"
 
 typedef void MenuHandler(Command id);
 using MenuKind = Platform::MenuItem::Indicator;
@@ -1286,7 +1287,8 @@ c:
             SS.GW.SplitLinesOrCurves();
             break;
         case Command::OFFSET_CONTOUR: {
-            printf("Offset Contour: Entry level for JS engine testing!\n");
+            js.refresh();
+            js.eval("test();");
             break;
         }
 
