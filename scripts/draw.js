@@ -14,3 +14,9 @@ draw.circle = function(center, radius, construction)
 {
     add_circle(Number(center.x), Number(center.y), Number(radius), construction);
 }
+draw.arc = function(center, start_angle, end_angle, radius, construction)
+{
+    start_angle = start_angle * (3.14159265359 / 180.0);
+    end_angle = end_angle * (3.14159265359 / 180.0);
+    add_arc(Number(center.x), Number(center.y), Number(start_angle), Number(end_angle), Number(radius), construction);
+}

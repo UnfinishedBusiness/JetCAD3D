@@ -70,6 +70,26 @@ static duk_ret_t add_circle(duk_context *ctx)
     r->style = style;
     return 0;  /* no return value (= undefined) */
 }
+static duk_ret_t add_arc(duk_context *ctx)
+{
+    hStyle style;
+    hRequest hr = SS.GW.AddRequest(Request::Type::ARC_OF_CIRCLE, /*rememberForUndo=*/false);
+    double radius = duk_to_number(ctx, 4) * SS.exportScale;
+    double sa = duk_to_number(ctx, 2);
+    double ea = duk_to_number(ctx, 3);
+    Vector c = Vector::From(duk_to_number(ctx, 0) * SS.exportScale, duk_to_number(ctx, 1) * SS.exportScale, 0);
+    Vector rvs = Vector::From(radius * cos(sa), radius * sin(sa), 0).Plus(c);
+    Vector rve = Vector::From(radius * cos(ea), radius * sin(ea), 0).Plus(c);
+
+    SK.GetEntity(hr.entity(1))->PointForceTo(c);
+    SK.GetEntity(hr.entity(2))->PointForceTo(rvs);
+    SK.GetEntity(hr.entity(3))->PointForceTo(rve);
+
+    Request *r = SK.GetRequest(hr);
+    r->construction = duk_to_boolean(ctx, 5);
+    r->style = style;
+    return 0;  /* no return value (= undefined) */
+}
 std::string Javascript::eval(std::string exp)
 {
     duk_push_string(ctx, exp.c_str());
@@ -112,6 +132,9 @@ void Javascript::init()
 
     duk_push_c_function(ctx, add_circle, 4 /*nargs*/);
     duk_put_global_string(ctx, "add_circle");
+
+    duk_push_c_function(ctx, add_arc, 6 /*nargs*/);
+    duk_put_global_string(ctx, "add_arc");
 
     duk_module_duktape_init(ctx);
     eval_file("scripts/loader.js");

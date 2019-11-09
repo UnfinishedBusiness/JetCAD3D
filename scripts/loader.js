@@ -33,3 +33,18 @@ function test_circles()
         radius += 0.125;
     }   
 }
+function test_arcs()
+{
+    scale = 1;
+    for (var x = 0; x < 100; x++)
+    {
+        draw.polar_line({x: 0, y: 0}, 2 * scale, 90, true);
+        draw.polar_line({x: 0, y: 0}, 2 * scale, 0, true);
+        draw.arc({x: 0, y:0 }, 0, 90, 2 * scale, true);
+        scale ++;
+    }
+}
+function test()
+{
+    
+}
