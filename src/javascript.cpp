@@ -90,6 +90,22 @@ static duk_ret_t add_arc(duk_context *ctx)
     r->style = style;
     return 0;  /* no return value (= undefined) */
 }
+static duk_ret_t text_window_printf(duk_context *ctx)
+{
+    SS.TW.Printf(false, duk_to_string(ctx, 0));
+    return 0;  /* no return value (= undefined) */
+}
+static duk_ret_t text_window_clear_screen(duk_context *ctx)
+{
+    SS.TW.ClearScreen();
+    //SS.GW.ForceTextWindowShown();
+    return 0;  /* no return value (= undefined) */
+}
+static duk_ret_t text_window_show_screen(duk_context *ctx)
+{
+    SS.GW.ForceTextWindowShown();
+    return 0;  /* no return value (= undefined) */
+}
 std::string Javascript::eval(std::string exp)
 {
     duk_push_string(ctx, exp.c_str());
@@ -135,6 +151,15 @@ void Javascript::init()
 
     duk_push_c_function(ctx, add_arc, 6 /*nargs*/);
     duk_put_global_string(ctx, "add_arc");
+
+    duk_push_c_function(ctx, text_window_printf, 1 /*nargs*/);
+    duk_put_global_string(ctx, "text_window_printf");
+
+    duk_push_c_function(ctx, text_window_clear_screen, 0 /*nargs*/);
+    duk_put_global_string(ctx, "text_window_clear_screen");
+
+    duk_push_c_function(ctx, text_window_clear_screen, 0 /*nargs*/);
+    duk_put_global_string(ctx, "text_window_show_screen");
 
     duk_module_duktape_init(ctx);
     eval_file("scripts/loader.js");

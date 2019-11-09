@@ -46,5 +46,7 @@ function test_arcs()
 }
 function test()
 {
-    
+    text_window_clear_screen();
+    text_window_show_screen();
+    text_window_printf("test");
 }
