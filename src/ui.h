@@ -119,6 +119,7 @@ enum class Command : uint32_t {
     TTF_TEXT,
     IMAGE,
     SPLIT_CURVES,
+    OFFSET_CONTOUR,
     TANGENT_ARC,
     CONSTRUCTION,
     // Group

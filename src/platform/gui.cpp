@@ -104,10 +104,10 @@ std::vector<FileFilter> SurfaceFileFilters = {
 
 std::vector<FileFilter> VectorFileFilters = {
     { CN_("file-type", "PDF file"), { "pdf" } },
+    { CN_("file-type", "DXF file (AutoCAD 2007)"), { "dxf" } },
     { CN_("file-type", "Encapsulated PostScript"), { "eps",  "ps" } },
     { CN_("file-type", "Scalable Vector Graphics"), { "svg" } },
     { CN_("file-type", "STEP file"), { "step", "stp" } },
-    { CN_("file-type", "DXF file (AutoCAD 2007)"), { "dxf" } },
     { CN_("file-type", "HPGL file"), { "plt",  "hpgl" } },
     { CN_("file-type", "G Code"), { "ngc",  "txt" } },
 };

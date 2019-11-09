@@ -6,9 +6,11 @@
 //-----------------------------------------------------------------------------
 #include "solvespace.h"
 #include "config.h"
+#include "javascript.h"
 
 SolveSpaceUI SolveSpace::SS = {};
 Sketch SolveSpace::SK = {};
+Javascript js;
 
 void SolveSpaceUI::Init() {
 #if !defined(HEADLESS)
@@ -44,18 +46,18 @@ void SolveSpaceUI::Init() {
 
     exportMode = false;
     // Chord tolerance
-    chordTol = settings->ThawFloat("ChordTolerancePct", 0.5);
+    chordTol = settings->ThawFloat("ChordTolerancePct", 0.01);
     // Max pwl segments to generate
-    maxSegments = settings->ThawInt("MaxSegments", 10);
+    maxSegments = settings->ThawInt("MaxSegments", 50);
     // Chord tolerance
-    exportChordTol = settings->ThawFloat("ExportChordTolerance", 0.1);
+    exportChordTol = settings->ThawFloat("ExportChordTolerance", 0.01);
     // Max pwl segments to generate
     exportMaxSegments = settings->ThawInt("ExportMaxSegments", 64);
     // View units
-    viewUnits = (Unit)settings->ThawInt("ViewUnits", (uint32_t)Unit::MM);
+    viewUnits = (Unit)settings->ThawInt("ViewUnits", (uint32_t)Unit::INCHES);
     // Number of digits after the decimal point
     afterDecimalMm = settings->ThawInt("AfterDecimalMm", 2);
-    afterDecimalInch = settings->ThawInt("AfterDecimalInch", 3);
+    afterDecimalInch = settings->ThawInt("AfterDecimalInch", 4);
     afterDecimalDegree = settings->ThawInt("AfterDecimalDegree", 2);
     useSIPrefixes = settings->ThawBool("UseSIPrefixes", false);
     // Camera tangent (determines perspective)
@@ -63,7 +65,7 @@ void SolveSpaceUI::Init() {
     // Grid spacing
     gridSpacing = settings->ThawFloat("GridSpacing", 5.0);
     // Export scale factor
-    exportScale = settings->ThawFloat("ExportScale", 1.0);
+    exportScale = settings->ThawFloat("ExportScale", 25.4);
     // Export offset (cutter radius comp)
     exportOffset = settings->ThawFloat("ExportOffset", 0.0);
     // Rewrite exported colors close to white into black (assuming white bg)
@@ -83,7 +85,7 @@ void SolveSpaceUI::Init() {
     // Export pwl curves (instead of exact) always
     exportPwlCurves = settings->ThawBool("ExportPwlCurves", false);
     // Background color on-screen
-    backgroundColor = settings->ThawColor("BackgroundColor", RGBi(0, 0, 0));
+    backgroundColor = settings->ThawColor("BackgroundColor", RGBi(0, 0, 44));
     // Whether export canvas size is fixed or derived from bbox
     exportCanvasSizeAuto = settings->ThawBool("ExportCanvasSizeAuto", true);
     // Margins for automatic canvas size
@@ -146,6 +148,7 @@ void SolveSpaceUI::Init() {
         // Do this once the window is created.
         Request3DConnexionEventsForWindow(GW.window);
     }
+    js.init();
 }
 
 bool SolveSpaceUI::LoadAutosaveFor(const Platform::Path &filename) {

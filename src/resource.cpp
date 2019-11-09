@@ -1452,16 +1452,16 @@ Translation Translation::From(const std::string &poData) {
 const std::string &Translation::Translate(const TranslationKey &key) {
     auto it = messages.find(key);
     if(it == messages.end()) {
-        dbp("Missing (absent) translation for %s'%s'", key.context.c_str(), key.ident.c_str());
+        //dbp("Missing (absent) translation for %s'%s'", key.context.c_str(), key.ident.c_str());
         messages[key].emplace_back(key.ident);
         it = messages.find(key);
     }
     if(it->second[0].empty()) {
-        dbp("Missing (empty) translation for %s'%s'", key.context.c_str(), key.ident.c_str());
+        //dbp("Missing (empty) translation for %s'%s'", key.context.c_str(), key.ident.c_str());
         it->second[0] = key.ident;
     }
     if(it->second.size() != 1) {
-        dbp("Incorrect use of translated message %s'%s'", key.context.c_str(), key.ident.c_str());
+        //dbp("Incorrect use of translated message %s'%s'", key.context.c_str(), key.ident.c_str());
         ssassert(false, "Using a message with a plural form without a number");
     }
     return it->second[0];
@@ -1472,15 +1472,15 @@ const std::string &Translation::TranslatePlural(const TranslationKey &key, unsig
 
     auto it = messages.find(key);
     if(it == messages.end()) {
-        dbp("Missing (absent) translation for %s'%s'", key.context.c_str(), key.ident.c_str());
+        //dbp("Missing (absent) translation for %s'%s'", key.context.c_str(), key.ident.c_str());
         for(unsigned i = 0; i < pluralCount; i++) {
             messages[key].emplace_back(key.ident);
         }
         it = messages.find(key);
     }
     if(it->second[pluralForm].empty()) {
-        dbp("Missing (empty) translation for %s'%s'[%d]",
-            key.context.c_str(), key.ident.c_str(), pluralForm);
+        //dbp("Missing (empty) translation for %s'%s'[%d]",
+            //key.context.c_str(), key.ident.c_str(), pluralForm);
         it->second[pluralForm] = key.ident;
     }
     return it->second[pluralForm];

@@ -486,6 +486,12 @@ public:
 
     hEntity createLine(Vector p0, Vector p1, hStyle style, bool constrainHV = false) {
         if(p0.Equals(p1)) return Entity::NO_ENTITY;
+        /* Scale points by import/export scale*/
+        p0.x = p0.x * SS.exportScale;
+        p0.y = p0.y * SS.exportScale;
+        p1.x = p1.x * SS.exportScale;
+        p1.y = p1.y * SS.exportScale;
+
         hRequest hr = SS.GW.AddRequest(Request::Type::LINE_SEGMENT, /*rememberForUndo=*/false);
         SK.GetEntity(hr.entity(1))->PointForceTo(p0);
         SK.GetEntity(hr.entity(2))->PointForceTo(p1);
@@ -517,8 +523,15 @@ public:
     }
 
     hEntity createCircle(const Vector &c, double r, hStyle style) {
+
+        /* Scale points by import/export scale */
+        Vector center;
+        center.x = c.x * SS.exportScale;
+        center.y = c.y * SS.exportScale;
+        r = r * SS.exportScale;
+        
         hRequest hr = SS.GW.AddRequest(Request::Type::CIRCLE, /*rememberForUndo=*/false);
-        SK.GetEntity(hr.entity(1))->PointForceTo(c);
+        SK.GetEntity(hr.entity(1))->PointForceTo(center);
         processPoint(hr.entity(1));
         SK.GetEntity(hr.entity(64))->DistanceForceTo(r);
 
@@ -561,10 +574,10 @@ public:
         if(addPendingBlockEntity<DRW_Arc>(data)) return;
 
         hRequest hr = SS.GW.AddRequest(Request::Type::ARC_OF_CIRCLE, /*rememberForUndo=*/false);
-        double r = data.radious;
+        double r = data.radious * SS.exportScale;
         double sa = data.staangle;
         double ea = data.endangle;
-        Vector c = Vector::From(data.basePoint.x, data.basePoint.y, data.basePoint.z);
+        Vector c = Vector::From(data.basePoint.x * SS.exportScale, data.basePoint.y * SS.exportScale, data.basePoint.z * SS.exportScale);
         Vector rvs = Vector::From(r * cos(sa), r * sin(sa), data.basePoint.z).Plus(c);
         Vector rve = Vector::From(r * cos(ea), r * sin(ea), data.basePoint.z).Plus(c);
 

@@ -830,7 +830,7 @@ void GraphicsWindow::Paint() {
     Camera   camera   = GetCamera();
     Lighting lighting = GetLighting();
 
-    if(!SS.ActiveGroupsOkay()) {
+    /*if(!SS.ActiveGroupsOkay()) {
         // Draw a different background whenever we're having solve problems.
         RgbaColor bgColor = Style::Color(Style::DRAW_ERROR);
         bgColor = RgbaColor::FromFloat(0.4f*bgColor.redF(),
@@ -839,7 +839,7 @@ void GraphicsWindow::Paint() {
         lighting.backgroundColor = bgColor;
         // And show the text window, which has info to debug it
         ForceTextWindowShown();
-    }
+    }*/
 
     auto renderStartTime = std::chrono::high_resolution_clock::now();
 
@@ -889,9 +889,12 @@ void GraphicsWindow::Paint() {
     }
 
     // Also display an fps counter.
+
+     // We aim for a steady 60fps; draw the counter in red when we're slower.
+     /*
     RgbaColor renderTimeColor;
     if(renderTime.count() > 16.67) {
-        // We aim for a steady 60fps; draw the counter in red when we're slower.
+       
         renderTimeColor = { 255, 0, 0, 255 };
     } else {
         renderTimeColor = { 255, 255, 255, 255 };
@@ -900,7 +903,7 @@ void GraphicsWindow::Paint() {
                                      (long)renderTime.count(),
                                      (long)(1000 / std::max(0.1, renderTime.count()))),
                             5, 5, renderTimeColor);
-
+    */
     canvas->FlushFrame();
     canvas->Clear();
 }

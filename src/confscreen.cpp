@@ -260,7 +260,7 @@ void TextWindow::ShowConfiguration() {
         SS.useSIPrefixes ? CHECK_TRUE : CHECK_FALSE);
 
     Printf(false, "");
-    Printf(false, "%Ft export scale factor (1:1=mm, 1:25.4=inch)");
+    Printf(false, "%Ft import/export scale factor (1:1=mm, 1:25.4=inch)");
     Printf(false, "%Ba   1:%# %Fl%Ll%f%D[change]%E",
         (double)SS.exportScale,
         &ScreenChangeExportScale, 0);

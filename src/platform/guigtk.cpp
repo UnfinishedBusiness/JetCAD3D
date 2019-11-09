@@ -1284,7 +1284,7 @@ public:
             std::find(extensions.begin(), extensions.end(), extension) -
             extensions.begin();
         if(extensionIndex < filters.size()) {
-            gtkChooser->set_filter(filters[extensionIndex]);
+            gtkChooser->set_filter(filters[extensionIndex + 1]); //Make DXF default filter
         } else {
             gtkChooser->set_filter(filters.front());
         }

@@ -200,6 +200,9 @@ set(solvespace_core_SOURCES
     undoredo.cpp
     util.cpp
     view.cpp
+    duktape.c
+    duk_module_duktape.c
+    javascript.cpp
     platform/platform.cpp
     platform/gui.cpp
     render/render.cpp
