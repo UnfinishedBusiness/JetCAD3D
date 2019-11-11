@@ -1,6 +1,7 @@
 include("scripts/console.js");
 include("scripts/draw.js");
 include("scripts/geometry.js");
+include("scripts/dialog.js");
 
 function line_test()
 {
@@ -46,6 +47,19 @@ function test_arcs()
 }
 function test()
 {
-    new_dialog(30, 30, 200, 250, "Test1");
-    new_dialog(150, 30, 400, 450, "Test 2");
+    var test = dialog.new({x: 100, y: 400}, {width: 300, height: 300}, "Test");
+    dialog.add_button(test, {x: 10, y: 10}, {width: 50, height: 30}, "OK", function(){
+        print("You clicked OK on test\n");
+    });
+    dialog.add_button(test, {x: 80, y: 10}, {width: 50, height: 30}, "Cancel", function(){
+        print("You Cancel on test\n");
+    });
+
+    var test1 = dialog.new({x: 300, y: 400}, {width: 300, height: 300}, "Test1");
+    dialog.add_button(test1, {x: 10, y: 10}, {width: 50, height: 30}, "OK", function(){
+        print("You clicked OK on test1\n");
+    });
+    dialog.add_button(test1, {x: 80, y: 10}, {width: 50, height: 30}, "Cancel", function(){
+        print("You Cancel on test1\n");
+    });
 }
