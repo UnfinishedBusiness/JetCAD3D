@@ -6,6 +6,7 @@
 // Copyright 2008-2013 Jonathan Westhues.
 //-----------------------------------------------------------------------------
 #include "solvespace.h"
+#include "dialog.h"
 
 bool GraphicsWindow::Selection::Equals(Selection *b) {
     if(entity     != b->entity)     return false;
@@ -904,6 +905,12 @@ void GraphicsWindow::Paint() {
                                      (long)(1000 / std::max(0.1, renderTime.count()))),
                             5, 5, renderTimeColor);
     */
+    //uiCanvas.DrawBitmapText(ssprintf("Test Text"),30, 30, (RgbaColor){ 255, 0, 0, 255 });
+    //uiCanvas.DrawRect(100, 200, 200, 5, (RgbaColor){ 255, 0, 0, 255 }, (RgbaColor){ 0, 0, 0, 255 }); 
+    for (long unsigned int x = 0; x < dialogs.size(); x++)
+    {
+        dialogs[x].render(uiCanvas);
+    }
     canvas->FlushFrame();
     canvas->Clear();
 }

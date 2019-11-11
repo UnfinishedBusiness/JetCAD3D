@@ -4,6 +4,7 @@
 #include "javascript.h"
 #include "libdxfrw.h"
 #include "libdwgr.h"
+#include "dialog.h"
 #include <string>
 
 static void push_file_as_string(duk_context *ctx, const char *filename) {
@@ -90,22 +91,12 @@ static duk_ret_t add_arc(duk_context *ctx)
     r->style = style;
     return 0;  /* no return value (= undefined) */
 }
-static duk_ret_t text_window_printf(duk_context *ctx)
+static duk_ret_t new_dialog(duk_context *ctx)
 {
-    SS.TW.Printf(false, duk_to_string(ctx, 0));
+    dialogs.push_back(Dialog(duk_to_int(ctx, 0), duk_to_int(ctx, 1), duk_to_int(ctx, 2), duk_to_int(ctx, 3), std::string(duk_to_string(ctx, 4))));
     return 0;  /* no return value (= undefined) */
 }
-static duk_ret_t text_window_clear_screen(duk_context *ctx)
-{
-    SS.TW.ClearScreen();
-    //SS.GW.ForceTextWindowShown();
-    return 0;  /* no return value (= undefined) */
-}
-static duk_ret_t text_window_show_screen(duk_context *ctx)
-{
-    SS.GW.ForceTextWindowShown();
-    return 0;  /* no return value (= undefined) */
-}
+
 std::string Javascript::eval(std::string exp)
 {
     duk_push_string(ctx, exp.c_str());
@@ -152,14 +143,8 @@ void Javascript::init()
     duk_push_c_function(ctx, add_arc, 6 /*nargs*/);
     duk_put_global_string(ctx, "add_arc");
 
-    duk_push_c_function(ctx, text_window_printf, 1 /*nargs*/);
-    duk_put_global_string(ctx, "text_window_printf");
-
-    duk_push_c_function(ctx, text_window_clear_screen, 0 /*nargs*/);
-    duk_put_global_string(ctx, "text_window_clear_screen");
-
-    duk_push_c_function(ctx, text_window_clear_screen, 0 /*nargs*/);
-    duk_put_global_string(ctx, "text_window_show_screen");
+    duk_push_c_function(ctx, new_dialog, 5 /*nargs*/);
+    duk_put_global_string(ctx, "new_dialog");
 
     duk_module_duktape_init(ctx);
     eval_file("scripts/loader.js");

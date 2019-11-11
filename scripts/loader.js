@@ -46,7 +46,6 @@ function test_arcs()
 }
 function test()
 {
-    text_window_clear_screen();
-    text_window_show_screen();
-    text_window_printf("test");
+    new_dialog(30, 30, 200, 250, "Test1");
+    new_dialog(150, 30, 400, 450, "Test 2");
 }

@@ -4,6 +4,7 @@
 // Copyright 2008-2013 Jonathan Westhues.
 //-----------------------------------------------------------------------------
 #include "solvespace.h"
+#include "dialog.h"
 
 void GraphicsWindow::UpdateDraggedPoint(hEntity hp, double mx, double my) {
     Entity *p = SK.GetEntity(hp);
@@ -86,6 +87,7 @@ void GraphicsWindow::MouseMoved(double x, double y, bool leftDown,
 {
     if(window->IsEditorVisible()) return;
     if(context.active) return;
+    
 
     SS.extraLine.draw = false;
 
@@ -878,6 +880,20 @@ bool GraphicsWindow::MouseEvent(Platform::MouseEvent event) {
 
     double width, height;
     window->GetContentSize(&width, &height);
+
+    /* 
+        Intersect Mouse Events to be processed by dialog
+        if any event processed event by dialog returns true return 
+        this function so other events don't get processed as well
+    */
+    int mousex = event.x;
+    int mousey = height - event.y;
+    for (long unsigned int x = 0; x < dialogs.size(); x++)
+    {
+        //dialogs[x].mouseEvent(event, mousex, mousey);
+        if (dialogs[x].mouseEvent(event, mousex, mousey) == true) return true;
+    }
+    /*******/
 
     event.x = event.x - width / 2;
     event.y = height / 2 - event.y;

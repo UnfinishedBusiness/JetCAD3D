@@ -203,6 +203,7 @@ set(solvespace_core_SOURCES
     duktape.c
     duk_module_duktape.c
     javascript.cpp
+    dialog.cpp
     platform/platform.cpp
     platform/gui.cpp
     render/render.cpp
