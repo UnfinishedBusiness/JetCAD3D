@@ -109,6 +109,28 @@ static duk_ret_t dialog_add_button(duk_context *ctx)
     }
     return 0;  /* no return value (= undefined) */
 }
+static duk_ret_t dialog_add_label(duk_context *ctx)
+{
+    for (long unsigned int x = 0; x < dialogs.size(); x++)
+    {
+        if (x == duk_to_int(ctx, 0)) //We found ID to append button to
+        {
+            dialogs[x].add_label(duk_to_int(ctx, 1), duk_to_int(ctx, 2), std::string(duk_to_string(ctx, 3)));
+        }
+    }
+    return 0;  /* no return value (= undefined) */
+}
+static duk_ret_t dialog_add_input(duk_context *ctx)
+{
+    for (long unsigned int x = 0; x < dialogs.size(); x++)
+    {
+        if (x == duk_to_int(ctx, 0)) //We found ID to append button to
+        {
+            dialogs[x].add_input(duk_to_int(ctx, 1), duk_to_int(ctx, 2), duk_to_int(ctx, 3), duk_to_int(ctx, 4), std::string(duk_to_string(ctx, 5)));
+        }
+    }
+    return 0;  /* no return value (= undefined) */
+}
 static duk_ret_t dialog_close(duk_context *ctx)
 {
     dialogs.erase(dialogs.begin() + duk_to_int(ctx, 0));
@@ -166,6 +188,12 @@ void Javascript::init()
 
     duk_push_c_function(ctx, dialog_add_button, 6 /*nargs*/);
     duk_put_global_string(ctx, "dialog_add_button");
+
+    duk_push_c_function(ctx, dialog_add_label, 4 /*nargs*/);
+    duk_put_global_string(ctx, "dialog_add_label");
+
+    duk_push_c_function(ctx, dialog_add_input, 6 /*nargs*/);
+    duk_put_global_string(ctx, "dialog_add_input");
 
     duk_push_c_function(ctx, dialog_close, 1 /*nargs*/);
     duk_put_global_string(ctx, "dialog_close");

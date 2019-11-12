@@ -28,7 +28,7 @@ bool Dialog::mouseEvent(Platform::MouseEvent event, int x, int y)
         case Platform::MouseEvent::Type::PRESS:{
             if(event.button == Platform::MouseEvent::Button::LEFT) {
                 this->leftMousePressed = true;
-                if (this->isFocused == false && x > this->posx && x < this->posx + this->width && y > this->posy && y < this->posy + this->height) //Make sure we are focused
+                /*if (this->isFocused == false && x > this->posx && x < this->posx + this->width && y > this->posy && y < this->posy + this->height) //Make sure we are focused
                 {
                     for (long unsigned int x = 0; x < dialogs.size(); x++)
                     {
@@ -36,8 +36,8 @@ bool Dialog::mouseEvent(Platform::MouseEvent event, int x, int y)
                     }
                     this->isFocused = true;
                     SS.GW.Invalidate();
-                    return true;
-                }
+                    //return true;
+                }*/
                 if (this->isFocused == true && x > (this->posx + this->width - 19) && x < (this->posx + this->width-1) && y < (this->posy + this->height - 1) && y > (this->posy + this->height - 19)) //Close button
                 {
                     //printf("Close button clicked!\n");
@@ -49,7 +49,7 @@ bool Dialog::mouseEvent(Platform::MouseEvent event, int x, int y)
                             SS.GW.Invalidate();
                         }
                     }
-                    return true;
+                    //return true;
                 }
                 else if (this->isFocused == true && x > (this->posx) && x < (this->posx + this->width) && y > (this->posy + this->height - 20) && y < (this->posy + this->height)) //Title bar dragging
                 {
@@ -68,11 +68,21 @@ bool Dialog::mouseEvent(Platform::MouseEvent event, int x, int y)
                             {
                                 //printf("Clicked button: %s\n", this->WidgetStack[z].button.label.c_str());
                                 js.eval("dialog.element_clicked(\'{ \"dialog_id\":\"" + std::to_string(this->id) + "\", \"type\":\"button_click\", \"button_label\":\"" + this->WidgetStack[z].button.label + "\"}\');");
-                                return true;
+                                //return true;
                             }
                         }
-                        
                     }
+                }
+                if (x > this->posx && x < this->posx + this->width && y > this->posy && y < this->posy + this->height) //If we are a click in a window eat the click so noone else sees it
+                {
+                    //printf("Click was on a window but not a element!\n");
+                    for (long unsigned int x = 0; x < dialogs.size(); x++)
+                    {
+                        dialogs[x].isFocused = false;
+                    }
+                    this->isFocused = true;
+                    SS.GW.Invalidate();
+                    return true;
                 }
                 
             } else if(event.button == Platform::MouseEvent::Button::MIDDLE ||
@@ -128,6 +138,34 @@ void Dialog::add_button(int px, int py, int w, int h, std::string l)
     this->WidgetStack.push_back(widget);
     SS.GW.Invalidate();
 }
+void Dialog::add_label(int px, int py, std::string l)
+{
+    LabelElement label;
+    label.posx = px;
+    label.posy = py;
+    label.label = l;
+
+    WidgetElement widget;
+    widget.type = DIALOG_LABEL_WIDGET;
+    widget.label = label;
+    this->WidgetStack.push_back(widget);
+    SS.GW.Invalidate();
+}
+void Dialog::add_input(int px, int py, int width, int height, std::string value)
+{
+    InputElement input;
+    input.posx = px;
+    input.posy = py;
+    input.width = width;
+    input.height = height;
+    input.value = value;
+
+    WidgetElement widget;
+    widget.type = DIALOG_INPUT_WIDGET;
+    widget.input = input;
+    this->WidgetStack.push_back(widget);
+    SS.GW.Invalidate();
+}
 void Dialog::render(UiCanvas uiCanvas)
 {
     int zindex = 0;
@@ -151,6 +189,15 @@ void Dialog::render(UiCanvas uiCanvas)
         {
             uiCanvas.DrawRect(this->posx + this->WidgetStack[x].button.posx, this->posx + this->WidgetStack[x].button.posx + this->WidgetStack[x].button.width, this->posy + this->WidgetStack[x].button.posy, this->posy + this->WidgetStack[x].button.posy + this->WidgetStack[x].button.height, DIALOG_BUTTON_COLOR, DIALOG_BUTTON_COLOR, zindex);
             uiCanvas.DrawBitmapText(ssprintf(this->WidgetStack[x].button.label.c_str()), this->posx + this->WidgetStack[x].button.posx + 10, this->posy + this->WidgetStack[x].button.posy + 10, DIALOG_FONT_COLOR, zindex);
+        }
+        if (this->WidgetStack[x].type == DIALOG_LABEL_WIDGET)
+        {
+            uiCanvas.DrawBitmapText(ssprintf(this->WidgetStack[x].label.label.c_str()), this->posx + this->WidgetStack[x].label.posx, this->posy + this->WidgetStack[x].label.posy, DIALOG_FONT_COLOR, zindex);
+        }
+        if (this->WidgetStack[x].type == DIALOG_INPUT_WIDGET)
+        {
+            uiCanvas.DrawRect(this->posx + this->WidgetStack[x].input.posx, this->posx + this->WidgetStack[x].input.posx + this->WidgetStack[x].input.width, this->posy + this->WidgetStack[x].input.posy, this->posy + this->WidgetStack[x].input.posy + this->WidgetStack[x].input.height, DIALOG_INPUT_BACKROUND_COLOR, DIALOG_INPUT_BORDER_OUTLINE_FOCUSED_COLOR, zindex);
+            uiCanvas.DrawBitmapText(ssprintf(this->WidgetStack[x].input.value.c_str()), this->posx + this->WidgetStack[x].input.posx + 10, this->posy + this->WidgetStack[x].input.posy + 10, DIALOG_SOLID_BLACK, zindex);
         }
     }
 }
