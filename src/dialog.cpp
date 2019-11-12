@@ -12,9 +12,10 @@ Dialog::Dialog(int px, int py, int w, int h, std::string t)
     this->width = w;
     this->height = h;
     this->title = t;
-    this->id = dialogs.size() - 1;
+    this->id = dialogs.size();
     this->leftMousePressed = false;
     this->windowDraggingActive = false;
+    this->isFocused = false;
 
     this->lastx = -1;
     this->lasty = -1;
@@ -27,7 +28,17 @@ bool Dialog::mouseEvent(Platform::MouseEvent event, int x, int y)
         case Platform::MouseEvent::Type::PRESS:{
             if(event.button == Platform::MouseEvent::Button::LEFT) {
                 this->leftMousePressed = true;
-                if (x > (this->posx + this->width - 19) && x < (this->posx + this->width-1) && y < (this->posy + this->height - 1) && y > (this->posy + this->height - 19)) //Close button
+                if (this->isFocused == false && x > this->posx && x < this->posx + this->width && y > this->posy && y < this->posy + this->height) //Make sure we are focused
+                {
+                    for (long unsigned int x = 0; x < dialogs.size(); x++)
+                    {
+                        dialogs[x].isFocused = false;
+                    }
+                    this->isFocused = true;
+                    SS.GW.Invalidate();
+                    return true;
+                }
+                if (this->isFocused == true && x > (this->posx + this->width - 19) && x < (this->posx + this->width-1) && y < (this->posy + this->height - 1) && y > (this->posy + this->height - 19)) //Close button
                 {
                     //printf("Close button clicked!\n");
                     for (long unsigned int x = 0; x < dialogs.size(); x++)
@@ -35,18 +46,19 @@ bool Dialog::mouseEvent(Platform::MouseEvent event, int x, int y)
                         if (dialogs[x].id == this->id)
                         {
                             dialogs.erase(dialogs.begin() + x);
+                            SS.GW.Invalidate();
                         }
                     }
                     return true;
                 }
-                else if (x > (this->posx) && x < (this->posx + this->width) && y > (this->posy + this->height - 20) && y < (this->posy + this->height)) //Title bar dragging
+                else if (this->isFocused == true && x > (this->posx) && x < (this->posx + this->width) && y > (this->posy + this->height - 20) && y < (this->posy + this->height)) //Title bar dragging
                 {
                     //printf("Clicked inside title: %s bar!\n", this->title.c_str());
                     this->windowDraggingActive = true;
                     this->lastx = x;
                     this->lasty = y;
                 }
-                else //Check if click is over a widget
+                else if (this->isFocused == true) //Check if click is over a widget
                 {
                     for (long unsigned int z = 0; z < this->WidgetStack.size(); z++)
                     {
@@ -55,7 +67,7 @@ bool Dialog::mouseEvent(Platform::MouseEvent event, int x, int y)
                             if (x > this->posx + this->WidgetStack[z].button.posx && x < this->posx + this->WidgetStack[z].button.posx + this->WidgetStack[z].button.width && y > this->posy + this->WidgetStack[z].button.posy && y < this->posy + this->WidgetStack[z].button.posy + this->WidgetStack[z].button.height) 
                             {
                                 //printf("Clicked button: %s\n", this->WidgetStack[z].button.label.c_str());
-                                js.eval("dialog.element_clicked(\'{ \"dialog_id\":\"" + std::to_string(z) + "\", \"type\":\"button_click\", \"button_label\":\"" + this->WidgetStack[z].button.label + "\"}\');");
+                                js.eval("dialog.element_clicked(\'{ \"dialog_id\":\"" + std::to_string(this->id) + "\", \"type\":\"button_click\", \"button_label\":\"" + this->WidgetStack[z].button.label + "\"}\');");
                                 return true;
                             }
                         }
@@ -114,21 +126,31 @@ void Dialog::add_button(int px, int py, int w, int h, std::string l)
     widget.type = DIALOG_BUTTON_WIDGET;
     widget.button = button;
     this->WidgetStack.push_back(widget);
+    SS.GW.Invalidate();
 }
 void Dialog::render(UiCanvas uiCanvas)
 {
-    uiCanvas.DrawRect(this->posx, this->posx + this->width, this->posy, this->posy + this->height, DIALOG_BACKPANE_COLOR, DIALOG_BACKPANE_COLOR); //Backpane
-    uiCanvas.DrawRect(this->posx, this->posx + this->width, this->posy + this->height, this->posy + this->height - 20, DIALOG_TITLEBAR_COLOR, DIALOG_TITLEBAR_COLOR); //Titlebar
-    uiCanvas.DrawBitmapText(ssprintf(this->title.c_str()), this->posx + 10, this->posy + this->height - 15, DIALOG_FONT_COLOR); //Title Text
-    uiCanvas.DrawRect(this->posx + this->width - 19, this->posx + this->width-1, this->posy + this->height - 1, this->posy + this->height - 19, DIALOG_SOLID_BLACK, DIALOG_SOLID_BLACK); //Close Button Container
-    uiCanvas.DrawBitmapText(ssprintf("X"), this->posx + this->width - 13, this->posy + this->height - 16, DIALOG_FONT_COLOR, 1); //Close Button Text
+    int zindex = 0;
+    if (this->isFocused) zindex = this->WidgetStack.size() * 2;
+    uiCanvas.DrawRect(this->posx, this->posx + this->width, this->posy, this->posy + this->height, DIALOG_BACKPANE_COLOR, DIALOG_BACKPANE_COLOR, zindex); //Backpane
+    if (this->isFocused)
+    {
+        uiCanvas.DrawRect(this->posx, this->posx + this->width, this->posy + this->height, this->posy + this->height - 20, DIALOG_TITLEBAR_COLOR, DIALOG_TITLEBAR_COLOR, zindex); //Titlebar
+    }
+    else
+    {
+        uiCanvas.DrawRect(this->posx, this->posx + this->width, this->posy + this->height, this->posy + this->height - 20, DIALOG_TITLEBAR_UNFOCUSED_COLOR, DIALOG_TITLEBAR_UNFOCUSED_COLOR, zindex); //Titlebar
+    }
+    uiCanvas.DrawBitmapText(ssprintf(this->title.c_str()), this->posx + 10, this->posy + this->height - 15, DIALOG_FONT_COLOR, zindex); //Title Text
+    uiCanvas.DrawRect(this->posx + this->width - 19, this->posx + this->width-1, this->posy + this->height - 1, this->posy + this->height - 19, DIALOG_SOLID_BLACK, DIALOG_SOLID_BLACK, zindex); //Close Button Container
+    uiCanvas.DrawBitmapText(ssprintf("X"), this->posx + this->width - 13, this->posy + this->height - 16, DIALOG_FONT_COLOR, zindex + 1); //Close Button Text
 
     for (long unsigned int x = 0; x < this->WidgetStack.size(); x++)
     {
         if (this->WidgetStack[x].type == DIALOG_BUTTON_WIDGET)
         {
-            uiCanvas.DrawRect(this->posx + this->WidgetStack[x].button.posx, this->posx + this->WidgetStack[x].button.posx + this->WidgetStack[x].button.width, this->posy + this->WidgetStack[x].button.posy, this->posy + this->WidgetStack[x].button.posy + this->WidgetStack[x].button.height, DIALOG_BUTTON_COLOR, DIALOG_BUTTON_COLOR);
-            uiCanvas.DrawBitmapText(ssprintf(this->WidgetStack[x].button.label.c_str()), this->posx + this->WidgetStack[x].button.posx + 10, this->posy + this->WidgetStack[x].button.posy + 10, DIALOG_FONT_COLOR);
+            uiCanvas.DrawRect(this->posx + this->WidgetStack[x].button.posx, this->posx + this->WidgetStack[x].button.posx + this->WidgetStack[x].button.width, this->posy + this->WidgetStack[x].button.posy, this->posy + this->WidgetStack[x].button.posy + this->WidgetStack[x].button.height, DIALOG_BUTTON_COLOR, DIALOG_BUTTON_COLOR, zindex);
+            uiCanvas.DrawBitmapText(ssprintf(this->WidgetStack[x].button.label.c_str()), this->posx + this->WidgetStack[x].button.posx + 10, this->posy + this->WidgetStack[x].button.posy + 10, DIALOG_FONT_COLOR, zindex);
         }
     }
 }

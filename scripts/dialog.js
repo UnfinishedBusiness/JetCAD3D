@@ -4,6 +4,9 @@ dialog.callbacks = [];
 dialog.new = function(pos, size, title){
     return new_dialog(pos.x, pos.y, size.width, size.height, title);
 }
+dialog.close = function(id){
+    dialog_close(id);
+}
 dialog.add_button = function(id, pos, size, label, callback)
 {
     dialog_add_button(id, pos.x, pos.y, size.width, size.height, label);

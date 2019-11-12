@@ -109,7 +109,12 @@ static duk_ret_t dialog_add_button(duk_context *ctx)
     }
     return 0;  /* no return value (= undefined) */
 }
-
+static duk_ret_t dialog_close(duk_context *ctx)
+{
+    dialogs.erase(dialogs.begin() + duk_to_int(ctx, 0));
+    SS.GW.Invalidate();
+    return 0;  /* no return value (= undefined) */
+}
 std::string Javascript::eval(std::string exp)
 {
     duk_push_string(ctx, exp.c_str());
@@ -161,6 +166,9 @@ void Javascript::init()
 
     duk_push_c_function(ctx, dialog_add_button, 6 /*nargs*/);
     duk_put_global_string(ctx, "dialog_add_button");
+
+    duk_push_c_function(ctx, dialog_close, 1 /*nargs*/);
+    duk_put_global_string(ctx, "dialog_close");
 
     duk_module_duktape_init(ctx);
     eval_file("scripts/loader.js");

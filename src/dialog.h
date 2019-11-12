@@ -10,8 +10,9 @@
 
 #define DIALOG_FONT_COLOR (RgbaColor){ 255, 255, 255, 255 } 
 #define DIALOG_BACKPANE_COLOR (RgbaColor){ 0, 0, 0, 200 }
-#define DIALOG_TITLEBAR_COLOR (RgbaColor){ 0, 0, 240, 200 }
-#define DIALOG_BUTTON_COLOR (RgbaColor){ 0, 140, 0, 200 }
+#define DIALOG_TITLEBAR_COLOR (RgbaColor){ 0, 0, 240, 255 }
+#define DIALOG_TITLEBAR_UNFOCUSED_COLOR (RgbaColor){ 50, 50, 50, 255 }
+#define DIALOG_BUTTON_COLOR (RgbaColor){ 0, 140, 0, 220 }
 #define DIALOG_SOLID_BLACK (RgbaColor){ 0, 0, 0, 255 }
 #define DIALOG_SOLID_WHITE (RgbaColor){ 255, 255, 255, 255 }
 
@@ -34,6 +35,7 @@ struct WidgetElement{
 class Dialog{
 
     public:
+        bool isFocused;
         Dialog(int px, int py, int w, int h, std::string t);  
         void render(UiCanvas uiCanvas);
         bool mouseEvent(Platform::MouseEvent event, int x, int y);
@@ -44,7 +46,6 @@ class Dialog{
         bool leftMousePressed;
         bool windowDraggingActive;
         /*************************/
-
         int posx;
         int posy;
         int width;
