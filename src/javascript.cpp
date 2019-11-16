@@ -96,7 +96,7 @@ static duk_ret_t new_dialog(duk_context *ctx)
     dialogs.push_back(Dialog(duk_to_int(ctx, 0), duk_to_int(ctx, 1), duk_to_int(ctx, 2), duk_to_int(ctx, 3), std::string(duk_to_string(ctx, 4))));
     int id = dialogs.size() - 1;
     duk_push_int(ctx, id);
-    return 1;  /* no return value (= undefined) */
+    return 1;  /* 1 return value */
 }
 static duk_ret_t dialog_add_button(duk_context *ctx)
 {
@@ -120,16 +120,40 @@ static duk_ret_t dialog_add_label(duk_context *ctx)
     }
     return 0;  /* no return value (= undefined) */
 }
+static duk_ret_t dialog_add_checkbox(duk_context *ctx)
+{
+    for (long unsigned int x = 0; x < dialogs.size(); x++)
+    {
+        if (x == duk_to_int(ctx, 0)) //We found ID to append button to
+        {
+            dialogs[x].add_checkbox(duk_to_int(ctx, 1), duk_to_int(ctx, 2), duk_to_boolean(ctx, 3), std::string(duk_to_string(ctx, 4)));
+        }
+    }
+    return 0;  /* no return value (= undefined) */
+}
 static duk_ret_t dialog_add_input(duk_context *ctx)
 {
     for (long unsigned int x = 0; x < dialogs.size(); x++)
     {
         if (x == duk_to_int(ctx, 0)) //We found ID to append button to
         {
-            dialogs[x].add_input(duk_to_int(ctx, 1), duk_to_int(ctx, 2), duk_to_int(ctx, 3), duk_to_int(ctx, 4), std::string(duk_to_string(ctx, 5)), duk_to_int(ctx, 6));
+            dialogs[x].add_input(duk_to_int(ctx, 1), duk_to_int(ctx, 2), duk_to_int(ctx, 3), duk_to_int(ctx, 4), std::string(duk_to_string(ctx, 5)), std::string(duk_to_string(ctx, 6)), duk_to_int(ctx, 7));
         }
     }
     return 0;  /* no return value (= undefined) */
+}
+static duk_ret_t dialog_get_value(duk_context *ctx)
+{
+    std::string r = "undefined";
+    for (long unsigned int x = 0; x < dialogs.size(); x++)
+    {
+        if (x == duk_to_int(ctx, 0)) //We found ID to append button to
+        {
+            r = dialogs[x].get_value(duk_to_string(ctx, 1));
+        }
+    }
+    duk_push_string(ctx, r.c_str());
+    return 1;  /* 1 return value */
 }
 static duk_ret_t dialog_close(duk_context *ctx)
 {
@@ -192,8 +216,14 @@ void Javascript::init()
     duk_push_c_function(ctx, dialog_add_label, 4 /*nargs*/);
     duk_put_global_string(ctx, "dialog_add_label");
 
-    duk_push_c_function(ctx, dialog_add_input, 7 /*nargs*/);
+    duk_push_c_function(ctx, dialog_add_input, 8 /*nargs*/);
     duk_put_global_string(ctx, "dialog_add_input");
+
+    duk_push_c_function(ctx, dialog_add_checkbox, 5 /*nargs*/);
+    duk_put_global_string(ctx, "dialog_add_checkbox");
+
+    duk_push_c_function(ctx, dialog_get_value, 2 /*nargs*/);
+    duk_put_global_string(ctx, "dialog_get_value");
 
     duk_push_c_function(ctx, dialog_close, 1 /*nargs*/);
     duk_put_global_string(ctx, "dialog_close");

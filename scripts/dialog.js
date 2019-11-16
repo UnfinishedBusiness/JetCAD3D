@@ -20,10 +20,17 @@ dialog.add_label = function(id, pos, label)
 {
     dialog_add_label(id, pos.x, pos.y, label);
 }
-dialog.add_input = function (id, pos, size, value, max_length)
+dialog.add_input = function (id, pos, size, label, value, max_length)
 {
-    //print("Max length: " + max_length + "\n");
-    dialog_add_input(id, pos.x, pos.y, size.width, size.height, value, max_length);
+    dialog_add_input(id, pos.x, pos.y, size.width, size.height, label, value, max_length);
+}
+dialog.add_checkbox = function (id, pos, checked, label)
+{
+    dialog_add_checkbox(id, pos.x, pos.y, checked, label);
+}
+dialog.get_value = function (id, label)
+{
+    return dialog_get_value(id, label);
 }
 dialog.element_clicked = function(id)
 {

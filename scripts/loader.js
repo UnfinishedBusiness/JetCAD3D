@@ -58,10 +58,12 @@ function test()
     var test1 = dialog.new({x: 300, y: 100}, {width: 300, height: 300}, "Test1");
     dialog.add_button(test1, {x: 10, y: 10}, {width: 50, height: 30}, "OK", function(){
         print("You clicked OK on test1\n");
+        print("depth: " + dialog.get_value(test1, "depth") + "\n");
+        print("test: " + dialog.get_value(test1, "test") + "\n");
     });
     dialog.add_button(test1, {x: 80, y: 10}, {width: 70, height: 30}, "Cancel", function(){
-        print("You Cancel on test1\n");
         dialog.close(test1);
     });
-    dialog.add_input(test1, {x: 130, y: 90}, {width: 100, height: 30}, "0.1875", 6);
+    dialog.add_input(test1, {x: 130, y: 90}, {width: 100, height: 30}, "depth", "0.1875", 6);
+    dialog.add_checkbox(test1, {x: 130, y: 150}, true, "test");
 }

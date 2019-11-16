@@ -23,6 +23,7 @@
 #define DIALOG_BUTTON_WIDGET 0
 #define DIALOG_LABEL_WIDGET 1
 #define DIALOG_INPUT_WIDGET 2
+#define DIALOG_CHECKBOX_WIDGET 3
 
 struct ButtonElement{
     int posx;
@@ -43,14 +44,22 @@ struct InputElement{
     int height;
     int max_length;
     std::string value;
+    std::string label;
     int id;
     bool hasFocus;
+};
+struct CheckboxElement{
+    int posx;
+    int posy;
+    bool isChecked;
+    std::string label;
 };
 struct WidgetElement{
     int type;
     ButtonElement button;
     LabelElement label;
     InputElement input;
+    CheckboxElement checkbox;
 };
 
 class Dialog{
@@ -63,7 +72,9 @@ class Dialog{
         bool keyboardEvent(Platform::KeyboardEvent event);
         void add_button(int px, int py, int w, int h, std::string l);
         void add_label(int px, int py, std::string l);
-        void add_input(int px, int py, int width, int height, std::string value, int max_length);
+        void add_input(int px, int py, int width, int height, std::string label, std::string value, int max_length);
+        void add_checkbox(int px, int py, bool checked, std::string label);
+        std::string get_value(std::string label);
     private:
         std::vector<WidgetElement> WidgetStack;
         /* Input State Variables */

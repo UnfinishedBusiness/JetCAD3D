@@ -104,6 +104,13 @@ bool Dialog::mouseEvent(Platform::MouseEvent event, int x, int y)
                                 //return true;
                             }
                         }
+                        else if (this->WidgetStack[z].type == DIALOG_CHECKBOX_WIDGET)
+                        {
+                            if (x > this->posx + this->WidgetStack[z].checkbox.posx && x < this->posx + this->WidgetStack[z].checkbox.posx + 20 && y > this->posy + this->WidgetStack[z].checkbox.posy && y < this->posy + this->WidgetStack[z].checkbox.posy + 20) 
+                            {
+                                this->WidgetStack[z].checkbox.isChecked = !this->WidgetStack[z].checkbox.isChecked;
+                            }
+                        }
                     }
                 }
                 if (x > this->posx && x < this->posx + this->width && y > this->posy && y < this->posy + this->height) //If we are a click in a window eat the click so noone else sees it
@@ -156,6 +163,20 @@ bool Dialog::mouseEvent(Platform::MouseEvent event, int x, int y)
     }
     return false;
 }
+void Dialog::add_checkbox(int px, int py, bool checked, std::string label)
+{
+    CheckboxElement checkbox;
+    checkbox.posx = px;
+    checkbox.posy = py;
+    checkbox.isChecked = checked;
+    checkbox.label = label;
+
+    WidgetElement widget;
+    widget.type = DIALOG_CHECKBOX_WIDGET;
+    widget.checkbox = checkbox;
+    this->WidgetStack.push_back(widget);
+    SS.GW.Invalidate();
+}
 void Dialog::add_button(int px, int py, int w, int h, std::string l)
 {
     ButtonElement button;
@@ -184,16 +205,16 @@ void Dialog::add_label(int px, int py, std::string l)
     this->WidgetStack.push_back(widget);
     SS.GW.Invalidate();
 }
-void Dialog::add_input(int px, int py, int width, int height, std::string value, int max_length)
+void Dialog::add_input(int px, int py, int width, int height, std::string label, std::string value, int max_length)
 {
     InputElement input;
     input.posx = px;
     input.posy = py;
     input.width = width;
     input.height = height;
+    input.label = label;
     input.value = value;
     input.max_length = max_length;
-    //printf("Max Length: %d\n", input.max_length);
     input.hasFocus = true;
 
     WidgetElement widget;
@@ -201,6 +222,25 @@ void Dialog::add_input(int px, int py, int width, int height, std::string value,
     widget.input = input;
     this->WidgetStack.push_back(widget);
     SS.GW.Invalidate();
+}
+std::string Dialog::get_value(std::string label)
+{
+    for (long unsigned int x = 0; x < this->WidgetStack.size(); x++)
+    {
+        if (this->WidgetStack[x].type == DIALOG_INPUT_WIDGET)
+        {
+            if (this->WidgetStack[x].input.label == label) return this->WidgetStack[x].input.value;
+        }
+        else if (this->WidgetStack[x].type == DIALOG_CHECKBOX_WIDGET)
+        {
+            if (this->WidgetStack[x].checkbox.label == label)
+            {
+                std::string r = "false";
+                if (this->WidgetStack[x].checkbox.isChecked == true) r = "true";
+                return r;
+            }
+        }
+    }
 }
 void Dialog::render(UiCanvas uiCanvas)
 {
@@ -226,14 +266,23 @@ void Dialog::render(UiCanvas uiCanvas)
             uiCanvas.DrawRect(this->posx + this->WidgetStack[x].button.posx, this->posx + this->WidgetStack[x].button.posx + this->WidgetStack[x].button.width, this->posy + this->WidgetStack[x].button.posy, this->posy + this->WidgetStack[x].button.posy + this->WidgetStack[x].button.height, DIALOG_BUTTON_COLOR, DIALOG_BUTTON_COLOR, zindex);
             uiCanvas.DrawBitmapText(ssprintf(this->WidgetStack[x].button.label.c_str()), this->posx + this->WidgetStack[x].button.posx + 10, this->posy + this->WidgetStack[x].button.posy + 10, DIALOG_FONT_COLOR, zindex);
         }
-        if (this->WidgetStack[x].type == DIALOG_LABEL_WIDGET)
+        else if (this->WidgetStack[x].type == DIALOG_LABEL_WIDGET)
         {
             uiCanvas.DrawBitmapText(ssprintf(this->WidgetStack[x].label.label.c_str()), this->posx + this->WidgetStack[x].label.posx, this->posy + this->WidgetStack[x].label.posy, DIALOG_FONT_COLOR, zindex);
         }
-        if (this->WidgetStack[x].type == DIALOG_INPUT_WIDGET)
+        else if (this->WidgetStack[x].type == DIALOG_INPUT_WIDGET)
         {
             uiCanvas.DrawRect(this->posx + this->WidgetStack[x].input.posx, this->posx + this->WidgetStack[x].input.posx + this->WidgetStack[x].input.width, this->posy + this->WidgetStack[x].input.posy, this->posy + this->WidgetStack[x].input.posy + this->WidgetStack[x].input.height, DIALOG_INPUT_BACKROUND_COLOR, DIALOG_INPUT_BORDER_OUTLINE_FOCUSED_COLOR, zindex);
             uiCanvas.DrawBitmapText(ssprintf(this->WidgetStack[x].input.value.c_str()), this->posx + this->WidgetStack[x].input.posx + 10, this->posy + this->WidgetStack[x].input.posy + 10, DIALOG_SOLID_BLACK, zindex);
+        }
+        else if (this->WidgetStack[x].type == DIALOG_CHECKBOX_WIDGET)
+        {
+            uiCanvas.DrawRect(this->posx + this->WidgetStack[x].checkbox.posx, this->posx + this->WidgetStack[x].checkbox.posx + 20, this->posy + this->WidgetStack[x].checkbox.posy, this->posy + this->WidgetStack[x].checkbox.posy + 20, DIALOG_INPUT_BACKROUND_COLOR, DIALOG_INPUT_BORDER_OUTLINE_FOCUSED_COLOR, zindex);
+            uiCanvas.DrawBitmapText(this->WidgetStack[x].checkbox.label, this->posx + this->WidgetStack[x].checkbox.posx + 30, this->posy + this->WidgetStack[x].checkbox.posy + 5, DIALOG_SOLID_WHITE, zindex);
+            if (this->WidgetStack[x].checkbox.isChecked == true)
+            {
+                uiCanvas.DrawBitmapText("X", this->posx + this->WidgetStack[x].checkbox.posx + 5, this->posy + this->WidgetStack[x].checkbox.posy + 5, DIALOG_SOLID_BLACK, zindex);
+            }
         }
     }
 }
