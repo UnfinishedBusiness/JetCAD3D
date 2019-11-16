@@ -41,6 +41,7 @@ struct InputElement{
     int posy;
     int width;
     int height;
+    int max_length;
     std::string value;
     int id;
     bool hasFocus;
@@ -59,9 +60,10 @@ class Dialog{
         Dialog(int px, int py, int w, int h, std::string t);  
         void render(UiCanvas uiCanvas);
         bool mouseEvent(Platform::MouseEvent event, int x, int y);
+        bool keyboardEvent(Platform::KeyboardEvent event);
         void add_button(int px, int py, int w, int h, std::string l);
         void add_label(int px, int py, std::string l);
-        void add_input(int px, int py, int width, int height, std::string value);
+        void add_input(int px, int py, int width, int height, std::string value, int max_length);
     private:
         std::vector<WidgetElement> WidgetStack;
         /* Input State Variables */

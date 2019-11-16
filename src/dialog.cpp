@@ -22,6 +22,39 @@ Dialog::Dialog(int px, int py, int w, int h, std::string t)
 
     SS.GW.Invalidate();
 }
+bool Dialog::keyboardEvent(Platform::KeyboardEvent event)
+{
+    /* We only need to pay attention to keyboard input if a window has focus */
+    if (this->isFocused == true)
+    {
+        if(event.key == Platform::KeyboardEvent::Key::CHARACTER)
+        {
+            //printf("(dialog) Recieved keypress: %c\n", event.chr);
+            for (long unsigned int z = 0; z < this->WidgetStack.size(); z++)
+            {
+                if (this->WidgetStack[z].type == DIALOG_INPUT_WIDGET)
+                {
+                    if (this->WidgetStack[z].input.hasFocus == true)
+                    {
+                        //printf("Pressed: '%d'\n", event.chr);
+                        if (event.chr == 127)
+                        {
+                            if (this->WidgetStack[z].input.value.size() > 0) this->WidgetStack[z].input.value.pop_back();
+                            //printf("Backspace: %s\n", this->WidgetStack[z].input.value.c_str());
+                        }
+                        else
+                        {
+                            //printf("size is: %d, max_length: %d\n", this->WidgetStack[z].input.value.size(),this->WidgetStack[z].input.max_length);
+                            if (this->WidgetStack[z].input.value.size() < this->WidgetStack[z].input.max_length) this->WidgetStack[z].input.value.push_back(event.chr);
+                        }
+                        SS.GW.Invalidate();
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+}
 bool Dialog::mouseEvent(Platform::MouseEvent event, int x, int y)
 {
     switch (event.type){
@@ -151,7 +184,7 @@ void Dialog::add_label(int px, int py, std::string l)
     this->WidgetStack.push_back(widget);
     SS.GW.Invalidate();
 }
-void Dialog::add_input(int px, int py, int width, int height, std::string value)
+void Dialog::add_input(int px, int py, int width, int height, std::string value, int max_length)
 {
     InputElement input;
     input.posx = px;
@@ -159,6 +192,9 @@ void Dialog::add_input(int px, int py, int width, int height, std::string value)
     input.width = width;
     input.height = height;
     input.value = value;
+    input.max_length = max_length;
+    //printf("Max Length: %d\n", input.max_length);
+    input.hasFocus = true;
 
     WidgetElement widget;
     widget.type = DIALOG_INPUT_WIDGET;

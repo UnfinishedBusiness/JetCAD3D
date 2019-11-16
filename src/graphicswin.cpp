@@ -6,6 +6,7 @@
 //-----------------------------------------------------------------------------
 #include "solvespace.h"
 #include "javascript.h"
+#include "dialog.h"
 
 typedef void MenuHandler(Command id);
 using MenuKind = Platform::MenuItem::Indicator;
@@ -232,6 +233,12 @@ bool GraphicsWindow::KeyboardEvent(Platform::KeyboardEvent event) {
         return true;
 
     if(event.key == KeyboardEvent::Key::CHARACTER) {
+        //printf("Pressed: '%c'\n", event.chr);
+        for (long unsigned int x = 0; x < dialogs.size(); x++)
+        {
+            //dialogs[x].mouseEvent(event, mousex, mousey);
+            if (dialogs[x].keyboardEvent(event) == true) return true;
+        }
         if(event.chr == '\b') {
             // Treat backspace identically to escape.
             MenuEdit(Command::UNSELECT_ALL);
@@ -242,6 +249,10 @@ bool GraphicsWindow::KeyboardEvent(Platform::KeyboardEvent event) {
             // Ideally we'd have a platform-independent way of binding to a particular
             // physical key regardless of shift status...
             MenuView(Command::ZOOM_IN);
+            return true;
+        }
+        else if(event.chr == ' ') {
+            ActivateCommand(Command::SELECT_CHAIN);
             return true;
         }
     }

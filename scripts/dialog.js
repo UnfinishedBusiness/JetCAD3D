@@ -20,9 +20,10 @@ dialog.add_label = function(id, pos, label)
 {
     dialog_add_label(id, pos.x, pos.y, label);
 }
-dialog.add_input = function (id, pos, size, value)
+dialog.add_input = function (id, pos, size, value, max_length)
 {
-    dialog_add_input(id, pos.x, pos.y, size.width, size.height, value);
+    //print("Max length: " + max_length + "\n");
+    dialog_add_input(id, pos.x, pos.y, size.width, size.height, value, max_length);
 }
 dialog.element_clicked = function(id)
 {

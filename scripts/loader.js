@@ -63,6 +63,5 @@ function test()
         print("You Cancel on test1\n");
         dialog.close(test1);
     });
-    dialog.add_label(test1, {x: 10, y: 100}, "Pierce Height: ");
-    dialog.add_input(test1, {x: 130, y: 90}, {width: 100, height: 30}, "0.1875");
+    dialog.add_input(test1, {x: 130, y: 90}, {width: 100, height: 30}, "0.1875", 6);
 }

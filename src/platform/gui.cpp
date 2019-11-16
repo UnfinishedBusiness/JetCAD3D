@@ -25,7 +25,6 @@ std::string AcceleratorDescription(const KeyboardEvent &accel) {
     if(accel.shiftDown) {
         label += "Shift+";
     }
-
     switch(accel.key) {
         case KeyboardEvent::Key::FUNCTION:
             label += ssprintf("F%d", accel.num);
