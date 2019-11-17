@@ -309,8 +309,8 @@ public:
         if(accel.controlDown) {
             accelMods |= Gdk::CONTROL_MASK;
         }
-
-        gtkMenuItem.set_accel_key(Gtk::AccelKey(accelKey, accelMods));
+        //Let our platform non-specific code handle these otherwise it interferes with dialogs keyboard focus
+        //gtkMenuItem.set_accel_key(Gtk::AccelKey(accelKey, accelMods));
     }
 
     void SetIndicator(Indicator type) override {
@@ -564,10 +564,12 @@ protected:
     bool process_key_event(KeyboardEvent::Type type, GdkEventKey *gdk_event) {
         KeyboardEvent event = {};
         event.type = type;
+        event.key = KeyboardEvent::Key::CHARACTER;
 
-        if(gdk_event->state & ~(GDK_SHIFT_MASK|GDK_CONTROL_MASK)) {
+        /* This was causing input to not work if the num lock key was on regarding dialogs class, everything seems to work without it */
+        /*if(gdk_event->state & ~(GDK_SHIFT_MASK|GDK_CONTROL_MASK)) {
             return false;
-        }
+        }*/
 
         event.shiftDown   = (gdk_event->state & GDK_SHIFT_MASK)   != 0;
         event.controlDown = (gdk_event->state & GDK_CONTROL_MASK) != 0;
@@ -576,7 +578,7 @@ protected:
         if(chr != 0) {
             event.key = KeyboardEvent::Key::CHARACTER;
             event.chr = chr;
-        } else if(gdk_event->keyval >= GDK_KEY_F1 &&
+        }else if(gdk_event->keyval >= GDK_KEY_F1 &&
                   gdk_event->keyval <= GDK_KEY_F12) {
             event.key = KeyboardEvent::Key::FUNCTION;
             event.num = gdk_event->keyval - GDK_KEY_F1 + 1;

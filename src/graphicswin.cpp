@@ -229,15 +229,15 @@ Platform::KeyboardEvent GraphicsWindow::AcceleratorForCommand(Command cmd) {
 bool GraphicsWindow::KeyboardEvent(Platform::KeyboardEvent event) {
     using Platform::KeyboardEvent;
 
-    if(event.type == KeyboardEvent::Type::RELEASE)
-        return true;
+    if(event.type == KeyboardEvent::Type::RELEASE) return true;
+            
 
     if(event.key == KeyboardEvent::Key::CHARACTER) {
         //printf("Pressed: '%c'\n", event.chr);
         for (long unsigned int x = 0; x < dialogs.size(); x++)
         {
             //dialogs[x].mouseEvent(event, mousex, mousey);
-            if (dialogs[x].keyboardEvent(event) == true) return true;
+            if (dialogs[x].keyboardEvent(event) == true) return false;
         }
         if(event.chr == '\b') {
             // Treat backspace identically to escape.

@@ -25,6 +25,7 @@ Dialog::Dialog(int px, int py, int w, int h, std::string t)
 bool Dialog::keyboardEvent(Platform::KeyboardEvent event)
 {
     /* We only need to pay attention to keyboard input if a window has focus */
+    //printf("(dialog) Recieved keypress: %d\n", event.chr);
     if (this->isFocused == true)
     {
         if(event.key == Platform::KeyboardEvent::Key::CHARACTER)
@@ -36,8 +37,12 @@ bool Dialog::keyboardEvent(Platform::KeyboardEvent event)
                 {
                     if (this->WidgetStack[z].input.hasFocus == true)
                     {
-                        //printf("Pressed: '%d'\n", event.chr);
-                        if (event.chr == 127)
+                        //printf("(KeyboardEvent) Pressed: '%d'\n", event.chr);
+                        #ifdef __APPLE__
+                            if (event.chr == 127)
+                        #else 
+                            if (event.chr == 8)
+                        #endif
                         {
                             if (this->WidgetStack[z].input.value.size() > 0) this->WidgetStack[z].input.value.pop_back();
                             //printf("Backspace: %s\n", this->WidgetStack[z].input.value.c_str());
@@ -45,7 +50,7 @@ bool Dialog::keyboardEvent(Platform::KeyboardEvent event)
                         else
                         {
                             //printf("size is: %d, max_length: %d\n", this->WidgetStack[z].input.value.size(),this->WidgetStack[z].input.max_length);
-                            if (this->WidgetStack[z].input.value.size() < this->WidgetStack[z].input.max_length) this->WidgetStack[z].input.value.push_back(event.chr);
+                            if ((int)this->WidgetStack[z].input.value.size() < this->WidgetStack[z].input.max_length) this->WidgetStack[z].input.value.push_back(event.chr);
                         }
                         SS.GW.Invalidate();
                         return true;
@@ -54,6 +59,7 @@ bool Dialog::keyboardEvent(Platform::KeyboardEvent event)
             }
         }
     }
+    return false;
 }
 bool Dialog::mouseEvent(Platform::MouseEvent event, int x, int y)
 {
@@ -225,6 +231,7 @@ void Dialog::add_input(int px, int py, int width, int height, std::string label,
 }
 std::string Dialog::get_value(std::string label)
 {
+    std::string r = "";
     for (long unsigned int x = 0; x < this->WidgetStack.size(); x++)
     {
         if (this->WidgetStack[x].type == DIALOG_INPUT_WIDGET)
@@ -235,12 +242,13 @@ std::string Dialog::get_value(std::string label)
         {
             if (this->WidgetStack[x].checkbox.label == label)
             {
-                std::string r = "false";
+                r = "false";
                 if (this->WidgetStack[x].checkbox.isChecked == true) r = "true";
                 return r;
             }
         }
     }
+    return r;
 }
 void Dialog::render(UiCanvas uiCanvas)
 {
