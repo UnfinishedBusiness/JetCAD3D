@@ -120,7 +120,7 @@ const MenuEntry Menu[] = {
 { 1, NULL,                              Command::NONE,             0,       KN, NULL   },
 { 1, N_("Toggle Construction"),         Command::CONSTRUCTION,     'x',    KN, mReq    },
 { 1, N_("&Fillet"),                     Command::TANGENT_ARC,      'f',     KN, mReq   },
-{ 1, N_("&Split at Intersecton"),       Command::SPLIT_CURVES,     's',    KN, mReq    },
+{ 1, N_("Split at Intersecton"),       Command::SPLIT_CURVES,     't',    KN, mReq    },
 { 1, N_("&Offset Contour"),             Command::OFFSET_CONTOUR,   'o',    KN, mReq    },
 
 { 0, N_("&Constrain"),                  Command::NONE,             0,       KN, mCon   },
@@ -134,7 +134,7 @@ const MenuEntry Menu[] = {
 { 1, N_("&Horizontal"),                 Command::HORIZONTAL,       'h',     KN, mCon   },
 { 1, N_("&Vertical"),                   Command::VERTICAL,         'v',     KN, mCon   },
 { 1, NULL,                              Command::NONE,             0,       KN, NULL   },
-{ 1, N_("&On Point / Curve / Plane"),   Command::ON_ENTITY,          0,     KN, mCon   },
+{ 1, N_("&On Point / Curve / Plane"),   Command::ON_ENTITY,          S|'o',     KN, mCon   },
 { 1, N_("E&qual Length / Radius / Angle"), Command::EQUAL,         'q',     KN, mCon   },
 { 1, N_("Length Ra&tio"),               Command::RATIO,            'z',     KN, mCon   },
 { 1, N_("Length Diff&erence"),          Command::DIFFERENCE,       'j',     KN, mCon   },
@@ -253,6 +253,11 @@ bool GraphicsWindow::KeyboardEvent(Platform::KeyboardEvent event) {
         }
         else if(event.chr == ' ') {
             ActivateCommand(Command::SELECT_CHAIN);
+            return true;
+        }
+        else if(event.chr == 's') {
+            js.refresh();
+            js.eval("tools.search_box();");
             return true;
         }
     }
@@ -1298,8 +1303,7 @@ c:
             SS.GW.SplitLinesOrCurves();
             break;
         case Command::OFFSET_CONTOUR: {
-            js.refresh();
-            js.eval("test();");
+            
             break;
         }
 
