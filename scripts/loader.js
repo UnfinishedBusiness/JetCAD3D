@@ -1,4 +1,5 @@
 include("scripts/console.js");
+include("scripts/tools.js");
 include("scripts/draw.js");
 include("scripts/geometry.js");
 include("scripts/dialog.js");

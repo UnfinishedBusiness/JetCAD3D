@@ -250,6 +250,20 @@ std::string Dialog::get_value(std::string label)
     }
     return r;
 }
+void Dialog::set_element_focus(std::string label, bool focus)
+{
+    for (long unsigned int x = 0; x < this->WidgetStack.size(); x++)
+    {
+        if (this->WidgetStack[x].type == DIALOG_INPUT_WIDGET)
+        {
+            if (this->WidgetStack[x].input.label == label)
+            {
+                this->isFocused = true;
+                this->WidgetStack[x].input.hasFocus = focus;
+            }
+        }
+    }
+}
 void Dialog::render(UiCanvas uiCanvas)
 {
     int zindex = 0;

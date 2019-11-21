@@ -142,6 +142,19 @@ static duk_ret_t dialog_add_input(duk_context *ctx)
     }
     return 0;  /* no return value (= undefined) */
 }
+static duk_ret_t dialog_set_element_focus(duk_context *ctx)
+{
+    for (long unsigned int x = 0; x < dialogs.size(); x++)
+    {
+        if (x == duk_to_int(ctx, 0))
+        {
+            bool f = false;
+            if (duk_to_int(ctx, 2) == 1) f = true;
+            dialogs[x].set_element_focus(std::string(duk_to_string(ctx, 1)), f);
+        }
+    }
+    return 0;  /* no return value (= undefined) */
+}
 static duk_ret_t dialog_get_value(duk_context *ctx)
 {
     std::string r = "undefined";
@@ -221,6 +234,9 @@ void Javascript::init()
 
     duk_push_c_function(ctx, dialog_add_checkbox, 5 /*nargs*/);
     duk_put_global_string(ctx, "dialog_add_checkbox");
+
+    duk_push_c_function(ctx, dialog_set_element_focus, 3 /*nargs*/);
+    duk_put_global_string(ctx, "dialog_set_element_focus");
 
     duk_push_c_function(ctx, dialog_get_value, 2 /*nargs*/);
     duk_put_global_string(ctx, "dialog_get_value");

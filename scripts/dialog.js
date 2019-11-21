@@ -28,6 +28,12 @@ dialog.add_checkbox = function (id, pos, checked, label)
 {
     dialog_add_checkbox(id, pos.x, pos.y, checked, label);
 }
+dialog.set_element_focus = function (id, label, focus)
+{
+    var f = 0;
+    if (focus == true) f = true;
+    dialog_set_element_focus(id, label, f);
+}
 dialog.get_value = function (id, label)
 {
     return dialog_get_value(id, label);

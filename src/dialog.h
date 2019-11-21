@@ -74,6 +74,7 @@ class Dialog{
         void add_label(int px, int py, std::string l);
         void add_input(int px, int py, int width, int height, std::string label, std::string value, int max_length);
         void add_checkbox(int px, int py, bool checked, std::string label);
+        void set_element_focus(std::string label, bool focus);
         std::string get_value(std::string label);
     private:
         std::vector<WidgetElement> WidgetStack;
