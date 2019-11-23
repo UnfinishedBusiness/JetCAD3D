@@ -208,6 +208,11 @@ set(solvespace_core_SOURCES
     platform/gui.cpp
     render/render.cpp
     render/render2d.cpp
+    imgui/imgui.cpp
+    imgui/imgui_demo.cpp
+    imgui/imgui_draw.cpp
+    imgui/imgui_widgets.cpp
+    imgui/imgui_impl_inputs.cpp
     srf/boolean.cpp
     srf/curve.cpp
     srf/merge.cpp

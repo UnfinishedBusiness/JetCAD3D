@@ -1014,6 +1014,7 @@ void IndexedMeshRenderer::Draw(const IndexedMeshRenderer::Handle &handle) {
     }
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, handle.indexBuffer);
+    
     glDrawElements(GL_TRIANGLES, handle.size, GL_UNSIGNED_INT, NULL);
 
     glDisableVertexAttribArray(ATTRIB_POS);

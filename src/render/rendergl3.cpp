@@ -444,6 +444,7 @@ void OpenGl3Renderer::Init() {
     glGenVertexArrays(1, &array);
     glBindVertexArray(array);
 #endif
+
     UpdateProjection();
 }
 

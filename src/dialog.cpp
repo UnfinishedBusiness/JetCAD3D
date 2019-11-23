@@ -1,6 +1,9 @@
 #include "solvespace.h"
 #include "dialog.h"
 #include "javascript.h"
+#include "render/gl3shader.h"
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_inputs.h"
 #include <string>
 
 std::vector <Dialog> dialogs;
@@ -19,6 +22,19 @@ Dialog::Dialog(int px, int py, int w, int h, std::string t)
 
     this->lastx = -1;
     this->lasty = -1;
+
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.DisplaySize.x = 400;
+    io.DisplaySize.y = 600;
+    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+    //ImGui::StyleColorsClassic();
 
     SS.GW.Invalidate();
 }
@@ -266,7 +282,7 @@ void Dialog::set_element_focus(std::string label, bool focus)
 }
 void Dialog::render(UiCanvas uiCanvas)
 {
-    int zindex = 0;
+    /*int zindex = 0;
     if (this->isFocused) zindex = this->WidgetStack.size() * 2;
     uiCanvas.DrawRect(this->posx, this->posx + this->width, this->posy, this->posy + this->height, DIALOG_BACKPANE_COLOR, DIALOG_BACKPANE_COLOR, zindex); //Backpane
     if (this->isFocused)
@@ -306,5 +322,27 @@ void Dialog::render(UiCanvas uiCanvas)
                 uiCanvas.DrawBitmapText("X", this->posx + this->WidgetStack[x].checkbox.posx + 5, this->posy + this->WidgetStack[x].checkbox.posy + 5, DIALOG_SOLID_BLACK, zindex);
             }
         }
-    }
+    }*/
+            //ImGui_ImplOpenGL3_NewFrame();
+        ImGui::NewFrame();
+
+        
+        {
+            static float f = 0.0f;
+            static int counter = 0;
+
+            ImGui::Begin("Hello, world!");                     
+
+
+
+            if (ImGui::Button("Button"))
+                counter++;
+            ImGui::SameLine();
+            ImGui::Text("counter = %d", counter);
+            ImGui::End();
+        }
+
+        // Rendering
+        ImGui::Render();
+        //glViewport(0, 0, 400, 600);
 }
