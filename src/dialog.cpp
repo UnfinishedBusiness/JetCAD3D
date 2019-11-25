@@ -23,19 +23,6 @@ Dialog::Dialog(int px, int py, int w, int h, std::string t)
     this->lastx = -1;
     this->lasty = -1;
 
-    // Setup Dear ImGui context
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
-    io.DisplaySize.x = 400;
-    io.DisplaySize.y = 600;
-    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-
-    // Setup Dear ImGui style
-    ImGui::StyleColorsDark();
-    //ImGui::StyleColorsClassic();
-
     SS.GW.Invalidate();
 }
 bool Dialog::keyboardEvent(Platform::KeyboardEvent event)
@@ -324,25 +311,6 @@ void Dialog::render(UiCanvas uiCanvas)
         }
     }*/
             //ImGui_ImplOpenGL3_NewFrame();
-        ImGui::NewFrame();
-
         
-        {
-            static float f = 0.0f;
-            static int counter = 0;
-
-            ImGui::Begin("Hello, world!");                     
-
-
-
-            if (ImGui::Button("Button"))
-                counter++;
-            ImGui::SameLine();
-            ImGui::Text("counter = %d", counter);
-            ImGui::End();
-        }
-
-        // Rendering
-        ImGui::Render();
         //glViewport(0, 0, 400, 600);
 }
