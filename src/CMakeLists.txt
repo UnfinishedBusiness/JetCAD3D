@@ -213,6 +213,7 @@ set(solvespace_core_SOURCES
     imgui/imgui_draw.cpp
     imgui/imgui_widgets.cpp
     imgui/imgui_impl_inputs.cpp
+    imgui/imgui_impl_opengl2.cpp
     srf/boolean.cpp
     srf/curve.cpp
     srf/merge.cpp
